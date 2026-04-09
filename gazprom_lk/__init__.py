@@ -37,39 +37,62 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await coordinator.async_config_entry_first_refresh()
     
     # Register services
+    # async def async_handle_send_indication(call: ServiceCall) -> None:
+    #     """Handle send indication service."""
+    #     value = call.data.get("value")
+    #     result = await coordinator.async_send_indication(value)
+        
+    #     if result.get("success"):
+    #         hass.components.persistent_notification.async_create(
+    #             f"Показания успешно переданы: {value} м³",
+    #             title="Газпром ЛК",
+    #             notification_id=f"gazprom_service_send_{entry.entry_id}"
+    #         )
+    #     else:
+    #         hass.components.persistent_notification.async_create(
+    #             f"Ошибка при передаче показаний: {result.get('message', 'Неизвестная ошибка')}",
+    #             title="Газпром ЛК",
+    #             notification_id=f"gazprom_service_error_{entry.entry_id}"
+    #         )
+    
+    # async def async_handle_update_data(call: ServiceCall) -> None:
+    #     """Handle update data service."""
+    #     try:
+    #         await coordinator.async_request_refresh()
+    #         hass.components.persistent_notification.async_create(
+    #             "Данные успешно обновлены",
+    #             title="Газпром ЛК",
+    #             notification_id=f"gazprom_service_update_{entry.entry_id}"
+    #         )
+    #     except Exception as err:
+    #         hass.components.persistent_notification.async_create(
+    #             f"Ошибка при обновлении данных: {err}",
+    #             title="Газпром ЛК",
+    #             notification_id=f"gazprom_service_error_{entry.entry_id}"
+    #         )
+
+
     async def async_handle_send_indication(call: ServiceCall) -> None:
         """Handle send indication service."""
         value = call.data.get("value")
         result = await coordinator.async_send_indication(value)
         
         if result.get("success"):
-            hass.components.persistent_notification.async_create(
-                f"Показания успешно переданы: {value} м³",
-                title="Газпром ЛК",
-                notification_id=f"gazprom_service_send_{entry.entry_id}"
-            )
+            _LOGGER.info("Показания успешно переданы через сервис: %s м³", value)
         else:
-            hass.components.persistent_notification.async_create(
-                f"Ошибка при передаче показаний: {result.get('message', 'Неизвестная ошибка')}",
-                title="Газпром ЛК",
-                notification_id=f"gazprom_service_error_{entry.entry_id}"
-            )
+            _LOGGER.error("Ошибка при передаче показаний через сервис: %s", result.get('message'))
     
     async def async_handle_update_data(call: ServiceCall) -> None:
         """Handle update data service."""
         try:
             await coordinator.async_request_refresh()
-            hass.components.persistent_notification.async_create(
-                "Данные успешно обновлены",
-                title="Газпром ЛК",
-                notification_id=f"gazprom_service_update_{entry.entry_id}"
-            )
+            _LOGGER.info("Данные успешно обновлены через сервис")
         except Exception as err:
-            hass.components.persistent_notification.async_create(
-                f"Ошибка при обновлении данных: {err}",
-                title="Газпром ЛК",
-                notification_id=f"gazprom_service_error_{entry.entry_id}"
-            )
+            _LOGGER.error("Ошибка при обновлении данных через сервис: %s", err)
+
+
+
+
     
     hass.services.async_register(
         DOMAIN,
