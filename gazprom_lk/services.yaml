@@ -1,31 +1,21 @@
-submit_reading:
+send_indication:
   name: Передать показания
-  description: Передать показания счетчика
+  description: Передать показания счетчика газа
   fields:
-    meter_id:
-      name: ID счетчика
-      description: Идентификатор счетчика
-      required: true
-      example: "12345"
-      selector:
-        text:
     value:
       name: Показание
-      description: Значение для передачи
+      description: Текущие показания счетчика в кубических метрах (м³) (целое число)
       required: true
-      example: "44555"
+      example: "12345"
       selector:
         number:
           min: 0
           max: 999999
-    type:
-      name: Тип показаний
-      description: Тип показаний (single, day, night)
-      required: false
-      default: "single"
-      selector:
-        select:
-          options:
-            - "single"
-            - "day"
-            - "night"
+          step: 1
+          unit_of_measurement: "м³"
+          mode: "box"
+
+update_data:
+  name: Обновить данные
+  description: Принудительное обновление данных из личного кабинета Газпром
+  fields: {}
