@@ -1,0 +1,12 @@
+{
+  "domain": "gazprom_lk",
+  "name": "Личный кабинет Газпром МЕЖРЕГИОНГАЗ",
+  "version": "1.0.0",
+  "documentation": "https://github.com/your-username/gazprom_lk",
+  "issue_tracker": "https://github.com/your-username/gazprom_lk/issues",
+  "codeowners": ["@your_username"],
+  "requirements": ["requests>=2.28.0"],
+  "dependencies": [],
+  "iot_class": "cloud_polling",
+  "config_flow": true
+}

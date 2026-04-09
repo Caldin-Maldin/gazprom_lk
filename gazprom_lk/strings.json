@@ -1,0 +1,20 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Настройка Gazprom LK",
+        "data": {
+          "login": "Логин",
+          "password": "Пароль"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Неверный логин или пароль",
+      "unknown": "Неизвестная ошибка"
+    },
+    "abort": {
+      "already_configured": "Учетная запись уже настроена"
+    }
+  }
+}
