@@ -1,0 +1,31 @@
+submit_reading:
+  name: Передать показания
+  description: Передать показания счетчика
+  fields:
+    meter_id:
+      name: ID счетчика
+      description: Идентификатор счетчика
+      required: true
+      example: "12345"
+      selector:
+        text:
+    value:
+      name: Показание
+      description: Значение для передачи
+      required: true
+      example: "44555"
+      selector:
+        number:
+          min: 0
+          max: 999999
+    type:
+      name: Тип показаний
+      description: Тип показаний (single, day, night)
+      required: false
+      default: "single"
+      selector:
+        select:
+          options:
+            - "single"
+            - "day"
+            - "night"
