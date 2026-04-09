@@ -1,3 +1,7 @@
+Для тех, кто пользуется приложением `https://play.google.com/store/apps/details?id=ru.abrr.gas` или сайтом `https://мойгаз.смородина.онлайн/`
+
+
+
 Установка
 
 1. Копируем папку с интеграцией в custom_components. Перезагружаем HA.
