@@ -1,4 +1,4 @@
-Для тех, кто пользуется приложением `https://play.google.com/store/apps/details?id=ru.abrr.gas` или сайтом `https://мойгаз.смородина.онлайн/`
+Для тех, кто пользуется приложением `https://play.google.com/store/apps/details?id=ru.abrr.gas` или сайтом `https://мойгаз.смородина.онлайн/` для оплаты за газ.
 
 
 
