@@ -1,0 +1,21 @@
+send_indication:
+  name: Передать показания
+  description: Передать показания счетчика газа
+  fields:
+    value:
+      name: Показание
+      description: Текущие показания счетчика в кубических метрах (м³) (целое число)
+      required: true
+      example: "12345"
+      selector:
+        number:
+          min: 0
+          max: 999999
+          step: 1
+          unit_of_measurement: "м³"
+          mode: "box"
+
+update_data:
+  name: Обновить данные
+  description: Принудительное обновление данных из личного кабинета Газпром
+  fields: {}

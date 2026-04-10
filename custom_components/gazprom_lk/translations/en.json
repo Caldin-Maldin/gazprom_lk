@@ -1,0 +1,67 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Gazprom Personal Account",
+        "description": "Enter your credentials for Gazprom Mezhregiongaz personal account",
+        "data": {
+          "login": "Login (phone or email)",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "Invalid login or password",
+      "unknown": "Unexpected error occurred",
+      "cannot_connect": "Failed to connect to the server"
+    },
+    "abort": {
+      "already_configured": "This personal account is already configured"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "balance_all": {
+        "name": "Total debt"
+      },
+      "balance_gas": {
+        "name": "Gas debt"
+      },
+      "counter_value": {
+        "name": "Meter reading"
+      },
+      "counter_rate": {
+        "name": "Gas consumption"
+      }
+    },
+    "button": {
+      "update": {
+        "name": "Update data"
+      },
+      "send_indication": {
+        "name": "Send reading"
+      }
+    },
+    "number": {
+      "indication_input": {
+        "name": "Meter reading"
+      }
+    }
+  },
+  "services": {
+    "send_indication": {
+      "name": "Send reading",
+      "description": "Send meter reading to Gazprom",
+      "fields": {
+        "value": {
+          "name": "Reading",
+          "description": "Current meter reading in cubic meters (m³)"
+        }
+      }
+    },
+    "update_data": {
+      "name": "Update data",
+      "description": "Force update data from Gazprom personal account"
+    }
+  }
+}
