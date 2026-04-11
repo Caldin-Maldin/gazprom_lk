@@ -19,9 +19,8 @@ class GazpromLKEntity(CoordinatorEntity[GazpromLKDataUpdateCoordinator]):
         ls_number = coordinator.data.get("ls_number", "") if coordinator.data else ""
         
         self._attr_device_info = DeviceInfo(
-            entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, coordinator.entry.entry_id)},
             manufacturer="Газпром Межрегионгаз",
             name=f"Лицевой счет {ls_number}",
-            model="Личный кабинет",
+            model="Личный кабинет"
         )
