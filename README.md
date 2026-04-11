@@ -1,3 +1,6 @@
+<img width="240" height="240" alt="image" src="https://github.com/user-attachments/assets/37766b62-e57b-4afe-aad4-bbf5923ddaa2" />
+
+
 Для тех, кто пользуется приложением `https://play.google.com/store/apps/details?id=ru.abrr.gas` или сайтом `https://мойгаз.смородина.онлайн/` для оплаты за газ.
 
 
