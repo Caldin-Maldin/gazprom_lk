@@ -756,6 +756,8 @@ class GazPromAPI:
                         ls_value_gas = 0.0
                         ls_rate_gas = 0.0
                         ls_value_date = ''
+                        ls_last_value_gas = 0.0
+                        ls_last_value_date = ''
                         
                         counters = info.get('counters', [])
                         if counters and len(counters) > 0:
@@ -768,8 +770,17 @@ class GazPromAPI:
                                 value_data = values[0]
                                 ls_value_gas = self._safe_float(value_data.get('valueDay', '0'))
                                 ls_rate_gas = self._safe_float(value_data.get('rate', '0'))
-                                ls_value_date = str(value_data.get('dateDt', ''))
-                        
+                                ls_value_date = str(value_data.get('date', ''))
+
+                                if len(values) > 1:
+                                    last_value_data = values[1]
+                                    ls_last_value_gas = self._safe_float(last_value_data.get('valueDay', '0'))
+                                    ls_last_value_date = str(last_value_data.get('date', ''))
+                                else:
+                                    ls_last_value_gas = 0.0
+                                    ls_last_value_date = ''
+
+
                         result = {
                             'ls_number': ls_number,
                             'ls_balance_all': ls_balance_all,
@@ -780,6 +791,8 @@ class GazPromAPI:
                             'ls_value_date': ls_value_date,
                             'lsid': lsid,
                             'counterid': counterid,
+                            'ls_last_value_gas': ls_last_value_gas,
+                            'ls_last_value_date': ls_last_value_date,                            
                             'error': ''
                         }
                         

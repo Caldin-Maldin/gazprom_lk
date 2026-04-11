@@ -21,6 +21,8 @@ from .const import (
     ATTR_VALUE_DATE,
     ATTR_LSID,
     ATTR_COUNTERID,
+    ATTR_COUNTER_LAST_VALUE, 
+    ATTR_LAST_VALUE_DATE,  
     ATTR_COUNTER_FULL_NAME,
     ATTR_LAST_INDICATION_DATE
 )
@@ -42,9 +44,10 @@ async def async_setup_entry(
         GazpromLKNumericSensor(coordinator, "balance_gas", "Задолженность за газ", "mdi:currency-rub", "RUB", 2),
         GazpromLKNumericSensor(coordinator, "counter_value", "Показания счетчика", "mdi:counter", "m³", 1),
         GazpromLKNumericSensor(coordinator, "counter_rate", "Расход газа", "mdi:gas-burner", "m³", 1),
-        
+        GazpromLKNumericSensor(coordinator, "counter_last_value", "Предыдущие показания", "mdi:counter", "м³", 1),  
         # Текстовые сенсоры - используем отдельный класс
         GazpromLKTextSensor(coordinator, "counter_name", "Название счетчика", "mdi:identifier"),
+        GazpromLKTextSensor(coordinator, "last_indication_previous_date", "Дата предыдущей передачи", "mdi:calendar-clock"),
         GazpromLKTextSensor(coordinator, "last_indication_date", "Дата последней передачи", "mdi:calendar-clock"),
     ]
     
@@ -89,6 +92,8 @@ class GazpromLKNumericSensor(GazpromLKEntity, SensorEntity):
                 return float(data.get("ls_balance_gas", 0))
             elif self._sensor_type == "counter_value":
                 return float(data.get("ls_value_gas", 0))
+            elif self._sensor_type == "counter_last_value":
+                return float(data.get("ls_last_value_gas", 0)) 
             elif self._sensor_type == "counter_rate":
                 return float(data.get("ls_rate_gas", 0))
         except (ValueError, TypeError):
@@ -108,6 +113,9 @@ class GazpromLKNumericSensor(GazpromLKEntity, SensorEntity):
         if self._sensor_type == "counter_value":
             attrs[ATTR_VALUE_DATE] = data.get("ls_value_date", "")
             attrs[ATTR_COUNTER_NAME] = data.get("ls_counter", "")
+        elif self._sensor_type == "counter_last_value":
+            attrs[ATTR_LAST_VALUE_DATE] = data.get("ls_last_value_date", "") 
+            attrs[ATTR_COUNTER_NAME] = data.get("ls_counter", "")
         elif self._sensor_type == "counter_rate":
             attrs[ATTR_VALUE_DATE] = data.get("ls_value_date", "")
             
@@ -115,6 +123,7 @@ class GazpromLKNumericSensor(GazpromLKEntity, SensorEntity):
         attrs[ATTR_COUNTERID] = data.get("counterid", "")
         
         return attrs
+
 
 class GazpromLKTextSensor(GazpromLKEntity, SensorEntity):
     """Representation of a text Gazprom LK sensor."""
@@ -132,8 +141,9 @@ class GazpromLKTextSensor(GazpromLKEntity, SensorEntity):
         self._attr_name = f"{name}"
         self._attr_unique_id = f"{coordinator.entry.entry_id}_{sensor_type}"
         self._attr_icon = icon
-        # Для даты используем device_class TIMESTAMP
-        if sensor_type == "last_indication_date":
+        
+        # Для дат используем device_class TIMESTAMP
+        if sensor_type in ["last_indication_date", "last_indication_previous_date"]:
             self._attr_device_class = SensorDeviceClass.TIMESTAMP
 
     @property
@@ -148,38 +158,69 @@ class GazpromLKTextSensor(GazpromLKEntity, SensorEntity):
             if self._sensor_type == "counter_name":
                 # Возвращаем название счетчика как строку
                 return data.get("ls_counter", "Неизвестно")
+            
             elif self._sensor_type == "last_indication_date":
-                # Преобразуем дату в datetime объект
+                # Дата последней передачи
                 date_str = data.get("ls_value_date", "")
-                if date_str and date_str.strip():
-                    try:
-                        # Пробуем разные форматы даты
-                        for fmt in ["%d.%m.%Y %H:%M:%S", "%Y-%m-%d %H:%M:%S", "%d.%m.%Y", "%Y-%m-%d"]:
-                            try:
-                                date_obj = datetime.strptime(date_str, fmt)
-                                # Возвращаем datetime объект, а не строку!
-                                return date_obj
-                            except ValueError:
-                                continue
-                        
-                        # Пробуем парсить ISO формат с Z (UTC)
-                        if date_str.endswith('Z'):
-                            date_str = date_str.replace('Z', '+00:00')
-                            date_obj = datetime.fromisoformat(date_str)
-                            return date_obj
-                        
-                        # Если ничего не подошло, логируем и возвращаем None
-                        _LOGGER.warning("Не удалось распарсить дату: %s", date_str)
-                        return None
-                    except (ValueError, TypeError) as e:
-                        _LOGGER.warning("Ошибка парсинга даты %s: %s", date_str, e)
-                        return None
-                return None
+                return self._parse_date(date_str)
+            
+            elif self._sensor_type == "last_indication_previous_date":
+                # Дата предыдущей передачи
+                date_str = data.get("ls_last_value_date", "")
+                return self._parse_date(date_str)
+            
         except (ValueError, TypeError, AttributeError) as e:
             _LOGGER.error("Ошибка в сенсоре %s: %s", self._sensor_type, e)
             return None
         
         return None
+    
+ 
+
+    def _parse_date(self, date_str: str) -> datetime | str | None:
+        """Parse date string to datetime object."""
+        if not date_str or not date_str.strip():
+            return None
+        
+        try:
+            # Формат из API: "2026-04-11T00:00:00"
+            if 'T' in date_str:
+                # Убираем время, оставляем только дату
+                date_part = date_str.split('T')[0]
+                date_obj = datetime.strptime(date_part, "%Y-%m-%d")
+                # Делаем дату timezone-aware (локальное время)
+                if date_obj.tzinfo is None:
+                    date_obj = date_obj.astimezone()
+                _LOGGER.debug("Распаршена дата '%s' -> %s", date_str, date_obj)
+                return date_obj
+            
+            # Другие форматы на всякий случай
+            formats = [
+                "%d.%m.%Y %H:%M:%S",  # 11.04.2026 14:30:00
+                "%Y-%m-%d %H:%M:%S",  # 2026-04-11 14:30:00
+                "%d.%m.%Y",           # 11.04.2026
+                "%Y-%m-%d",           # 2026-04-11
+            ]
+            
+            for fmt in formats:
+                try:
+                    date_obj = datetime.strptime(date_str, fmt)
+                    if date_obj.tzinfo is None:
+                        date_obj = date_obj.astimezone()
+                    _LOGGER.debug("Распаршена дата '%s' в формате '%s': %s", date_str, fmt, date_obj)
+                    return date_obj
+                except ValueError:
+                    continue
+            
+            # Если ничего не подошло, возвращаем строку
+            _LOGGER.warning("Не удалось распарсить дату: %s", date_str)
+            return date_str
+            
+        except (ValueError, TypeError) as e:
+            _LOGGER.warning("Ошибка парсинга даты '%s': %s", date_str, e)
+            return date_str if date_str else None
+
+
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
@@ -189,22 +230,39 @@ class GazpromLKTextSensor(GazpromLKEntity, SensorEntity):
             
         data = self.coordinator.data
         
-        attrs = {}
+        attrs = {
+            ATTR_LSID: data.get("lsid", ""),
+            "counter_id": data.get("counterid", ""),
+        }
+        
         if self._sensor_type == "counter_name":
-            # Добавляем дополнительную информацию о счетчике
-            attrs["counter_id"] = data.get("counterid", "")
-            attrs["last_value"] = data.get("ls_value_gas", 0)
-            attrs["last_value_date"] = data.get("ls_value_date", "")
-            attrs["rate"] = data.get("ls_rate_gas", 0)
-        elif self._sensor_type == "last_indication_date":
-            # Добавляем информацию о последних показаниях
-            attrs["last_value"] = data.get("ls_value_gas", 0)
-            attrs["counter_name"] = data.get("ls_counter", "")
-            attrs["counter_id"] = data.get("counterid", "")
-            attrs["rate"] = data.get("ls_rate_gas", 0)
-            # Добавляем сырую строку даты для отладки
-            attrs["raw_date_string"] = data.get("ls_value_date", "")
+            # Информация о счетчике
+            attrs.update({
+                "last_value": data.get("ls_value_gas", 0),
+                "last_value_date": data.get("ls_value_date", ""),
+                "previous_value": data.get("ls_last_value_gas", 0),
+                "previous_value_date": data.get("ls_last_value_date", ""),
+                "rate": data.get("ls_rate_gas", 0),
+            })
             
-        attrs[ATTR_LSID] = data.get("lsid", "")
+        elif self._sensor_type == "last_indication_date":
+            # Информация о последней передаче
+            attrs.update({
+                "last_value": data.get("ls_value_gas", 0),
+                "previous_value": data.get("ls_last_value_gas", 0),
+                "counter_name": data.get("ls_counter", ""),
+                "rate": data.get("ls_rate_gas", 0),
+                "raw_date_string": data.get("ls_value_date", ""),
+            })
+            
+        elif self._sensor_type == "last_indication_previous_date":
+            # Информация о предыдущей передаче
+            attrs.update({
+                "previous_value": data.get("ls_last_value_gas", 0),
+                "current_value": data.get("ls_value_gas", 0),
+                "counter_name": data.get("ls_counter", ""),
+                "rate": data.get("ls_rate_gas", 0),
+                "raw_date_string": data.get("ls_last_value_date", ""),
+            })
         
         return attrs
