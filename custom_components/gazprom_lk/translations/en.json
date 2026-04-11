@@ -2,66 +2,72 @@
   "config": {
     "step": {
       "user": {
-        "title": "Gazprom Personal Account",
-        "description": "Enter your credentials for Gazprom Mezhregiongaz personal account",
+        "title": "Личный кабинет Газпром Межрегионгаз",
+        "description": "Введите данные для входа в личный кабинет Газпром Межрегионгаз",
         "data": {
-          "login": "Login (phone or email)",
-          "password": "Password"
+          "login": "Логин (телефон или email)",
+          "password": "Пароль"
         }
       }
     },
     "error": {
-      "invalid_auth": "Invalid login or password",
-      "unknown": "Unexpected error occurred",
-      "cannot_connect": "Failed to connect to the server"
+      "invalid_auth": "Неверный логин или пароль",
+      "unknown": "Произошла неизвестная ошибка",
+      "cannot_connect": "Не удалось подключиться к серверу"
     },
     "abort": {
-      "already_configured": "This personal account is already configured"
+      "already_configured": "Этот лицевой счет уже настроен"
     }
   },
   "entity": {
     "sensor": {
       "balance_all": {
-        "name": "Total debt"
+        "name": "Общая задолженность"
       },
       "balance_gas": {
-        "name": "Gas debt"
+        "name": "Задолженность за газ"
       },
       "counter_value": {
-        "name": "Meter reading"
+        "name": "Показания счетчика"
       },
       "counter_rate": {
-        "name": "Gas consumption"
+        "name": "Расход газа"
+      },
+      "counter_name": {
+        "name": "Название счетчика"
+      },
+      "last_indication_date": {
+        "name": "Дата последней передачи"
       }
     },
     "button": {
       "update": {
-        "name": "Update data"
+        "name": "Обновить данные"
       },
       "send_indication": {
-        "name": "Send reading"
+        "name": "Передать показания"
       }
     },
     "number": {
       "indication_input": {
-        "name": "Meter reading"
+        "name": "Показания счетчика"
       }
     }
   },
   "services": {
     "send_indication": {
-      "name": "Send reading",
-      "description": "Send meter reading to Gazprom",
+      "name": "Передать показания",
+      "description": "Передать показания счетчика газа в Газпром Межрегионгаз",
       "fields": {
         "value": {
-          "name": "Reading",
-          "description": "Current meter reading in cubic meters (m³)"
+          "name": "Показание",
+          "description": "Текущее показание счетчика в кубических метрах (м³)"
         }
       }
     },
     "update_data": {
-      "name": "Update data",
-      "description": "Force update data from Gazprom personal account"
+      "name": "Обновить данные",
+      "description": "Принудительное обновление данных из личного кабинета Газпром Межрегионгаз"
     }
   }
 }

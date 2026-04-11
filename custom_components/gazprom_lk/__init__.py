@@ -23,6 +23,7 @@ SEND_INDICATION_SCHEMA = vol.Schema({
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up Gazprom LK from a config entry."""
+    _LOGGER.info("Настройка интеграции Gazprom LK для entry: %s", entry.entry_id)
     
     coordinator = GazpromLKDataUpdateCoordinator(hass, entry)
     
@@ -37,44 +38,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await coordinator.async_config_entry_first_refresh()
     
     # Register services
-    # async def async_handle_send_indication(call: ServiceCall) -> None:
-    #     """Handle send indication service."""
-    #     value = call.data.get("value")
-    #     result = await coordinator.async_send_indication(value)
-        
-    #     if result.get("success"):
-    #         hass.components.persistent_notification.async_create(
-    #             f"Показания успешно переданы: {value} м³",
-    #             title="Газпром ЛК",
-    #             notification_id=f"gazprom_service_send_{entry.entry_id}"
-    #         )
-    #     else:
-    #         hass.components.persistent_notification.async_create(
-    #             f"Ошибка при передаче показаний: {result.get('message', 'Неизвестная ошибка')}",
-    #             title="Газпром ЛК",
-    #             notification_id=f"gazprom_service_error_{entry.entry_id}"
-    #         )
-    
-    # async def async_handle_update_data(call: ServiceCall) -> None:
-    #     """Handle update data service."""
-    #     try:
-    #         await coordinator.async_request_refresh()
-    #         hass.components.persistent_notification.async_create(
-    #             "Данные успешно обновлены",
-    #             title="Газпром ЛК",
-    #             notification_id=f"gazprom_service_update_{entry.entry_id}"
-    #         )
-    #     except Exception as err:
-    #         hass.components.persistent_notification.async_create(
-    #             f"Ошибка при обновлении данных: {err}",
-    #             title="Газпром ЛК",
-    #             notification_id=f"gazprom_service_error_{entry.entry_id}"
-    #         )
-
-
     async def async_handle_send_indication(call: ServiceCall) -> None:
         """Handle send indication service."""
         value = call.data.get("value")
+        _LOGGER.info("Сервис send_indication вызван со значением: %s", value)
         result = await coordinator.async_send_indication(value)
         
         if result.get("success"):
@@ -89,10 +56,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             _LOGGER.info("Данные успешно обновлены через сервис")
         except Exception as err:
             _LOGGER.error("Ошибка при обновлении данных через сервис: %s", err)
-
-
-
-
     
     hass.services.async_register(
         DOMAIN,
@@ -111,6 +74,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Unload a config entry."""
+    _LOGGER.info("Выгрузка интеграции Gazprom LK для entry: %s", entry.entry_id)
+    
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     
     if unload_ok:
@@ -121,3 +86,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass.services.async_remove(DOMAIN, SERVICE_UPDATE_DATA)
     
     return unload_ok
+
+async def async_setup(hass: HomeAssistant, config: dict) -> bool:
+    """Set up the Gazprom LK integration."""
+    _LOGGER.debug("Глобальная настройка Gazprom LK")
+    # Эта функция нужна для совместимости, но основная настройка через config_flow
+    return True

@@ -2,12 +2,11 @@
 from datetime import timedelta
 import logging
 
-DOMAIN = "gazprom_lk"  # Изменили с "gazprom_lk" на "gas"
+DOMAIN = "gazprom_lk"
 LOGGER = logging.getLogger(__name__)
 
 DEFAULT_TIMEOUT = 30
-# Убрали автообновление - оставляем только None
-UPDATE_INTERVAL = None  # Изменили с timedelta(minutes=30)
+UPDATE_INTERVAL = None
 
 CONF_LOGIN = "login"
 CONF_PASSWORD = "password"
@@ -21,6 +20,8 @@ ATTR_COUNTER_RATE = "counter_rate"
 ATTR_VALUE_DATE = "value_date"
 ATTR_LSID = "lsid"
 ATTR_COUNTERID = "counterid"
+ATTR_COUNTER_FULL_NAME = "counter_full_name"  
+ATTR_LAST_INDICATION_DATE = "last_indication_date"  
 
 SERVICE_SEND_INDICATION = "send_indication"
 SERVICE_UPDATE_DATA = "update_data"

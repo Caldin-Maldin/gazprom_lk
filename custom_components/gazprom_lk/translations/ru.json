@@ -32,6 +32,12 @@
       },
       "counter_rate": {
         "name": "Расход газа"
+      },
+      "counter_name": {
+        "name": "Название счетчика"
+      },
+      "last_indication_date": {
+        "name": "Дата последней передачи"
       }
     },
     "button": {
@@ -61,7 +67,7 @@
     },
     "update_data": {
       "name": "Обновить данные",
-      "description": "Принудительное обновление данных из личного кабинета Газпром Межрегионгазsensor.0679618_k_oplatebutton.0679618_obnovit_dannyeautomation.123sensor.0679618_k_oplate"
+      "description": "Принудительное обновление данных из личного кабинета Газпром Межрегионгаз"
     }
   }
 }
