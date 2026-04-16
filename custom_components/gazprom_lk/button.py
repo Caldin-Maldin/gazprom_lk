@@ -58,7 +58,7 @@ class GazpromLKButton(GazpromLKEntity, ButtonEntity):
         """Handle update button press."""
         await self.coordinator.async_request_refresh()
         _LOGGER.info("Данные Gazprom LK успешно обновлены")
-        await self._show_notification("✅ Данные личного кабинета успешно обновлены")
+        await self._show_notification("✅ Данные успешно обновлены")
 
     async def _handle_send(self):
         """Handle send indication button press with validation."""
