@@ -139,26 +139,66 @@ class GazPromAPI:
             'X-Requested-With': 'XMLHttpRequest'
         }
 
+        # data_lsid = {
+        #     "operationName": "clientMessagesCount",
+        #     "query": """query clientMessagesCount {
+        #         clientMessagesCount {
+        #             ok
+        #             error
+        #             data {
+        #                 notReadTotal
+        #                 detailed {
+        #                     lsId
+        #                     isEls
+        #                     notRead
+        #                     __typename
+        #                 }
+        #                 __typename
+        #             }
+        #             __typename
+        #         }
+        #     }""",
+        #     "variables": {}
+        # }
+
+
+        # data_lsid = {
+        #     "operationName": "AccountList",
+        #     "query": """query AccountList {
+        #         accountsList {
+        #             ok    
+        #             error    
+        #             data { 
+        #                 id
+        #                 type
+        #                 number
+        #                 address
+        #                 alias
+        #                 hasAutopay
+        #                 isFull
+        #                 receipt {
+        #                     type
+        #                     changed
+        #                     __typename
+        #                 },
+        #                 source {
+        #                     id
+        #                     name
+        #                     __typename
+        #                 }
+        #                 __typename
+        #             }                    
+        #             __typename
+        #         }
+        #     }""",    
+        #     "variables": {}    
+        # }
+
+
         data_lsid = {
-            "operationName": "clientMessagesCount",
-            "query": """query clientMessagesCount {
-                clientMessagesCount {
-                    ok
-                    error
-                    data {
-                        notReadTotal
-                        detailed {
-                            lsId
-                            isEls
-                            notRead
-                            __typename
-                        }
-                        __typename
-                    }
-                    __typename
-                }
-            }""",
-            "variables": {}
+            "operationName": "AccountList",
+            "variables": {},
+            "query": "query AccountList { accountsList { ok error data { ...Account __typename } __typename } } fragment AccountReceipt on ReceiptInfo { type changed __typename } fragment AccountSource on ProviderBase { id name __typename } fragment Account on AccountListItem { id type number: account address alias hasAutopay isFull receipt { ...AccountReceipt __typename } source: provider { ...AccountSource __typename } __typename }"
         }
 
         try:
@@ -172,15 +212,29 @@ class GazPromAPI:
                     response_json = await response.json()
                     
                     # Проверяем структуру ответа
-                    if ('data' in response_json and 
-                        'clientMessagesCount' in response_json['data'] and
-                        'data' in response_json['data']['clientMessagesCount'] and
-                        'detailed' in response_json['data']['clientMessagesCount']['data'] and
-                        len(response_json['data']['clientMessagesCount']['data']['detailed']) > 0):
-                        
-                        lsid = response_json['data']['clientMessagesCount']['data']['detailed'][0].get('lsId')
+                    
+                    if ('data' in response_json and
+                        'accountsList' in response_json['data'] and
+                        response_json['data']['accountsList'].get('ok') is True and
+                        'data' in response_json['data']['accountsList'] and
+                        len(response_json['data']['accountsList']['data']) > 0):                 
+                    
+                        lsid = response_json['data']['accountsList']['data'][0].get('id')
                         if lsid is not None:
-                            return str(lsid)
+                            return str(lsid)                           
+                    # # Проверяем структуру ответа
+                    # if ('data' in response_json and 
+                    #     'clientMessagesCount' in response_json['data'] and
+                    #     'data' in response_json['data']['clientMessagesCount'] and
+                    #     'detailed' in response_json['data']['clientMessagesCount']['data'] and
+                    #     len(response_json['data']['clientMessagesCount']['data']['detailed']) > 0):
+                        
+                    #     lsid = response_json['data']['clientMessagesCount']['data']['detailed'][0].get('lsId')
+                    #     if lsid is not None:
+                    #         return str(lsid)                            
+                            
+                            
+                            
                         
         except aiohttp.ClientError as e:
             _LOGGER.error("Ошибка сети при получении lsid: %s", e)
