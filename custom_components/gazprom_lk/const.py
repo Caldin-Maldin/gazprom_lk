@@ -24,6 +24,7 @@ ATTR_LSID = "lsid"
 ATTR_COUNTERID = "counterid"
 ATTR_COUNTER_FULL_NAME = "counter_full_name"  
 ATTR_LAST_INDICATION_DATE = "last_indication_date"  
+ATTR_COUNTER_CHECK_DATE = "counter_check_date"  
 
 SERVICE_SEND_INDICATION = "send_indication"
 SERVICE_UPDATE_DATA = "update_data"

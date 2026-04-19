@@ -24,7 +24,8 @@ from .const import (
     ATTR_COUNTER_LAST_VALUE, 
     ATTR_LAST_VALUE_DATE,  
     ATTR_COUNTER_FULL_NAME,
-    ATTR_LAST_INDICATION_DATE
+    ATTR_LAST_INDICATION_DATE,
+    ATTR_COUNTER_CHECK_DATE 
 )
 from .coordinator import GazpromLKDataUpdateCoordinator
 from .entity import GazpromLKEntity
@@ -49,6 +50,7 @@ async def async_setup_entry(
         GazpromLKTextSensor(coordinator, "counter_name", "Название счетчика", "mdi:identifier"),
         GazpromLKTextSensor(coordinator, "last_indication_previous_date", "Дата предыдущей передачи", "mdi:calendar-clock"),
         GazpromLKTextSensor(coordinator, "last_indication_date", "Дата последней передачи", "mdi:calendar-clock"),
+        GazpromLKTextSensor(coordinator, "counter_check_date", "Дата проверки счетчика", "mdi:calendar-check"),
     ]
     
     async_add_entities(sensors)
@@ -168,6 +170,11 @@ class GazpromLKTextSensor(GazpromLKEntity, SensorEntity):
                 # Дата предыдущей передачи
                 date_str = data.get("ls_last_value_date", "")
                 return self._parse_date(date_str)
+
+            elif self._sensor_type == "counter_check_date":
+                # Дата проверки счетчика (новая)
+                date_str = data.get("counter_check_date", "")
+                return self._parse_date(date_str)
             
         except (ValueError, TypeError, AttributeError) as e:
             _LOGGER.error("Ошибка в сенсоре %s: %s", self._sensor_type, e)
@@ -221,7 +228,6 @@ class GazpromLKTextSensor(GazpromLKEntity, SensorEntity):
             return date_str if date_str else None
 
 
-
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
         """Return additional attributes."""
@@ -243,6 +249,7 @@ class GazpromLKTextSensor(GazpromLKEntity, SensorEntity):
                 "previous_value": data.get("ls_last_value_gas", 0),
                 "previous_value_date": data.get("ls_last_value_date", ""),
                 "rate": data.get("ls_rate_gas", 0),
+                "check_date": data.get("counter_check_date", ""),
             })
             
         elif self._sensor_type == "last_indication_date":
@@ -264,5 +271,13 @@ class GazpromLKTextSensor(GazpromLKEntity, SensorEntity):
                 "rate": data.get("ls_rate_gas", 0),
                 "raw_date_string": data.get("ls_last_value_date", ""),
             })
-        
+            
+        elif self._sensor_type == "counter_check_date":
+            # Информация о дате проверки счетчика
+            attrs.update({
+                "counter_name": data.get("ls_counter", ""),
+                "counter_id": data.get("counterid", ""),
+                "current_value": data.get("ls_value_gas", 0),
+                "raw_date_string": data.get("counter_check_date", ""), 
+            })
         return attrs

@@ -38,6 +38,9 @@
       },
       "last_indication_date": {
         "name": "Дата последней передачи"
+      },
+      "counter_check_date": {
+        "name": "Дата проверки счетчика"
       }
     },
     "button": {

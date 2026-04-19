@@ -818,6 +818,7 @@ class GazPromAPI:
                             counter = counters[0]
                             ls_counter = str(counter.get('name', ''))
                             counterid = str(counter.get('uuid', ''))
+                            counter_check_date = str(counter.get('checkDate', ''))
                             
                             values = counter.get('values', [])
                             if values and len(values) > 0:
@@ -846,7 +847,8 @@ class GazPromAPI:
                             'lsid': lsid,
                             'counterid': counterid,
                             'ls_last_value_gas': ls_last_value_gas,
-                            'ls_last_value_date': ls_last_value_date,                            
+                            'ls_last_value_date': ls_last_value_date,
+                            'counter_check_date': counter_check_date,
                             'error': ''
                         }
                         
