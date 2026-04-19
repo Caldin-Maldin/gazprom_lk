@@ -1,6 +1,5 @@
 {
     "name": "Интеграция личного кабинета МойГаз (мойгаз.смородина.онлайн)",
     "render_readme": true,
-    "country": "RU",
-    "filename": "gazprom_lk.zip"
+    "country": "RU"
 }
